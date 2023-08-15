@@ -96,7 +96,7 @@
 
     });
   });
-  
+  fetchPromise();
   let users = []
 
      const Initlikes = () => {
@@ -141,8 +141,9 @@ Initlikes()
         isLiked: false,
       })
     }
+    
     fetchPromiseNew();
-   renderUsers();
+  
    NameInputElement.value = "";
    CommentInputElement.value = "";
   })
@@ -210,12 +211,15 @@ const renderUsers = () => {
         }),
       }).then((response) => {
         response.json().then((responseUsers) => {
-          console.log(responseUsers);
+          fetchPromise();
           users = responseUsers.comments;
+        })
+             
         });
-      })
-      fetchPromise();
-      renderUsers();
+           
+
+    
+     
       
 
 
