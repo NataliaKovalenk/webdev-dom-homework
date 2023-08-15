@@ -85,7 +85,7 @@
     const newComments = responseUsers.comments.map((comment) => {
       return {
         name: comment.author.name,
-        date: new Date(comment.date),
+        date: comment.date,
         comment: comment.text,
         countLikes: comment.likes,
         isLiked: comment.isLiked,
