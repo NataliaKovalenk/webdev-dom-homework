@@ -140,8 +140,12 @@ body {
 
   padding: 10px;
   font-size: 24px;
-  }
+}
 
 .form-error {
   background-color: red;
+}
+
+.loader {
+  font-size: 32px;
 }

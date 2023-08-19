@@ -8,7 +8,8 @@
 
   <body>
     <div class="container">
-      <ul class="comments" id = "ListComments">
+    <div class="loader"></div>
+    <ul class="comments" id = "ListComments">
         <!-- <li class="comment">
           <div class="comment-header">
             <div>Глеб Фокин</div>
@@ -72,16 +73,21 @@
     const ButtonInputElement = document.getElementById("ButtonInput");
     const ListCommentsElement = document.getElementById("ListComments");
     const commentDate = new Date();
+    const loaderElement  = document.querySelector(".loader")
 
     let isReply = false;
        
     
     
     
-  const fetchPromise = () => fetch('https://wedev-api.sky.pro/api/v1/:NataliaKov/comments', {
+  const fetchPromise = () => {  
+  loaderElement.textContent = 'Подождите, комментарии загружаются...';
+  return  fetch('https://wedev-api.sky.pro/api/v1/:NataliaKov/comments', {
     method: "GET"
-  }).then((response) => {
-    response.json().then((responseUsers) => {
+  })
+  .then((response) => {
+    return response.json();})
+  .then((responseUsers) => {
     const newComments = responseUsers.comments.map((comment) => {
       return {
         name: comment.author.name,
@@ -90,12 +96,16 @@
         countLikes: comment.likes,
         isLiked: comment.isLiked,
       };
-    }  )
+    })
       users = newComments;
+      loaderElement.textContent = '';
+      ButtonInputElement.disabled = false;
+      ButtonInputElement.textContent = 'Написать';
       renderUsers();
+      
 
     });
-  });
+  }
   fetchPromise();
   let users = []
 
@@ -135,18 +145,22 @@ Initlikes()
         comment: replaceValue(TextInputValue)
           .replaceAll('QUOTE_BEGIN', '<div class="quote">')
           .replaceAll('QUOTE_END', '</div>'),
-        date: `${commentDate.toLocaleDateString('numeric')} ${commentDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+          date: `${commentDate.toLocaleDateString('numeric')} ${commentDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
           }`,
         countLikes: 0,
         isLiked: false,
       })
     }
-    
+    ButtonInputElement.disabled = true;
+    ButtonInputElement.textContent = 'Добавляю комментарий';
+    loaderElement.textContent = ''
     fetchPromiseNew();
+    
   
    NameInputElement.value = "";
    CommentInputElement.value = "";
   })
+  
   
   const newReplay = () => {
       const replyComments = document.querySelectorAll(".comment");
@@ -209,37 +223,18 @@ const renderUsers = () => {
           text: CommentInputElement.value,
           name: NameInputElement.value,
         }),
-      }).then((response) => {
-        response.json().then((responseUsers) => {
-          fetchPromise();
+      })
+      .then((response) => {
+       return response.json();
+      })
+      .then((responseUsers) => {
+        return fetchPromise();
+      })
+      .then((responseUsers) =>{
           users = responseUsers.comments;
-        })
-             
+          renderUsers();
         });
-           
-
-    
-     
-      
-
-
-     
-// {
-// name: 'Глеб Фокин',
-// date: '12.02.22 12:18',
-// comment: 'Это будет первый комментарий на этой странице',
-// countLikes: 3,
-// isLiked: false,
-
-// },
-// {
-// name: 'Варвара Н.',
-// date: '13.02.22 19:22',
-// comment: ' Мне нравится как оформлена эта страница! ❤',
-// countLikes: 75,
-// isLiked: false,
-// },
-
+          
 </script>
 </html>
 
