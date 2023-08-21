@@ -8,7 +8,8 @@
 
   <body>
     <div class="container">
-      <ul class="comments" id = "ListComments">
+    <div class="loader"></div>
+    <ul class="comments" id = "ListComments">
         <!-- <li class="comment">
           <div class="comment-header">
             <div>Глеб Фокин</div>
@@ -72,29 +73,41 @@
     const ButtonInputElement = document.getElementById("ButtonInput");
     const ListCommentsElement = document.getElementById("ListComments");
     const commentDate = new Date();
+    const loaderElement  = document.querySelector(".loader")
 
     let isReply = false;
+       
     
     
-    const users = [
-      {
-        name: 'Глеб Фокин',
-        date: '12.02.22 12:18',
-        comment: 'Это будет первый комментарий на этой странице',
-        countLikes: 3,
-        isLiked: false,
+    
+  const fetchPromise = () => {  
+  loaderElement.textContent = 'Подождите, комментарии загружаются...';
+  return  fetch('https://wedev-api.sky.pro/api/v1/:NataliaKov/comments', {
+    method: "GET"
+  })
+  .then((response) => {
+    return response.json();})
+  .then((responseUsers) => {
+    const newComments = responseUsers.comments.map((comment) => {
+      return {
+        name: comment.author.name,
+        date: comment.date,
+        comment: comment.text,
+        countLikes: comment.likes,
+        isLiked: comment.isLiked,
+      };
+    })
+      users = newComments;
+      loaderElement.textContent = '';
+      ButtonInputElement.disabled = false;
+      ButtonInputElement.textContent = 'Написать';
+      renderUsers();
+      
 
-      },
-      {
-        name: 'Варвара Н.',
-        date: '13.02.22 19:22',
-        comment: ' Мне нравится как оформлена эта страница! ❤',
-        countLikes: 75,
-        isLiked: false,
-
-      },
-    ]
-    
+    });
+  }
+  fetchPromise();
+  let users = []
 
      const Initlikes = () => {
         const likeButtons = document.querySelectorAll(".like-button");
@@ -132,16 +145,22 @@ Initlikes()
         comment: replaceValue(TextInputValue)
           .replaceAll('QUOTE_BEGIN', '<div class="quote">')
           .replaceAll('QUOTE_END', '</div>'),
-        date: `${commentDate.toLocaleDateString('numeric')} ${commentDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+          date: `${commentDate.toLocaleDateString('numeric')} ${commentDate.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
           }`,
         countLikes: 0,
         isLiked: false,
       })
     }
- renderUsers();
-  NameInputElement.value = "";
-  CommentInputElement.value = "";
+    ButtonInputElement.disabled = true;
+    ButtonInputElement.textContent = 'Добавляю комментарий';
+    loaderElement.textContent = ''
+    fetchPromiseNew();
+    
+  
+   NameInputElement.value = "";
+   CommentInputElement.value = "";
   })
+  
   
   const newReplay = () => {
       const replyComments = document.querySelectorAll(".comment");
@@ -189,31 +208,6 @@ const renderUsers = () => {
   renderUsers();
   
 
-
-  // ButtonInputElement.addEventListener("click", () => {
-   
-  //     if (NameInputElement.value === '') {
-  //       ButtonInputElement.disabled = true;
-  //     return;
-  //   } else if (CommentInputElement.value === '') {
-  //       ButtonInputElement.disabled = true;
-  //     return;
-  //   }
-  //     else {users.push({
-
-  //     name: NameInputElement.value,
-  //     date: `${commentDate.toLocaleDateString('numeric')} ${commentDate.toLocaleTimeString([], {hour: "2-digit", minute:"2-digit"})
-  //     }`,
-  //     comment: CommentInputElement.value,
-  //     countLikes: 0,
-  //     isLiked: false,
-  //   });}
-    
-  //   renderUsers();
-  //   NameInputElement.value = "";
-  //   CommentInputElement.value = "";
-  // });
-
   
   const replaceValue = (value) => {
     return value
@@ -223,7 +217,26 @@ const renderUsers = () => {
     .replaceAll('"', '&quot;');
 
   }
-  renderUsers();
-
+     const fetchPromiseNew = () => fetch('https://wedev-api.sky.pro/api/v1/:NataliaKov/comments', {
+        method: "POST",
+        body: JSON.stringify({
+          text: CommentInputElement.value,
+          name: NameInputElement.value,
+        }),
+      })
+      .then((response) => {
+       return response.json();
+      })
+      .then((responseUsers) => {
+        return fetchPromise();
+      })
+      .then((responseUsers) =>{
+          users = responseUsers.comments;
+          renderUsers();
+        });
+          
 </script>
 </html>
+
+
+
