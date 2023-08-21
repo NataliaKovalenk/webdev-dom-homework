@@ -98,9 +98,8 @@
       };
     })
       users = newComments;
-      loaderElement.textContent = '';
-      ButtonInputElement.disabled = false;
-      ButtonInputElement.textContent = 'Написать';
+      loaderElement.remove();
+    
       renderUsers();
       
 
@@ -155,10 +154,7 @@ Initlikes()
     ButtonInputElement.textContent = 'Добавляю комментарий';
     loaderElement.textContent = ''
     fetchPromiseNew();
-    
-  
-   NameInputElement.value = "";
-   CommentInputElement.value = "";
+       
   })
   
   
@@ -222,19 +218,46 @@ const renderUsers = () => {
         body: JSON.stringify({
           text: CommentInputElement.value,
           name: NameInputElement.value,
+          forceError: true,
         }),
       })
       .then((response) => {
-       return response.json();
-      })
+        if (response.status === 201) {
+          return response.json();
+        } else if (response.status === 400){
+         throw new Error('мало символов');
+         }
+         else if (response.status === 500) {
+          throw new Error('сервер упал');
+         }
+         else {
+          throw new Error ('пропал интернет')
+         }
+        })
+
       .then((responseUsers) => {
         return fetchPromise();
       })
-      .then((responseUsers) =>{
-          users = responseUsers.comments;
-          renderUsers();
-        });
-          
+      .then (() => {
+          ButtonInputElement.disabled = false;
+          ButtonInputElement.textContent = 'Написать';
+          NameInputElement.value = "";
+          CommentInputElement.value = "";
+        })
+        .catch ((error) => {
+          ButtonInputElement.disabled = false;
+          ButtonInputElement.textContent = 'Написать';
+          if (error.message === 'мало символов')
+          alert('Введите не менее 3х символов');
+          else if (error.message === 'сервер упал')
+         alert('Кажется что-то пошло не так, попробуйте позже');
+          else {
+            alert('У вас пропал интернет. Попробуйте позже')
+          }
+          console.warn(error);
+        })
+
+                  
 </script>
 </html>
 
