@@ -1,4 +1,4 @@
-import { NameInputElement,CommentInputElement,ButtonInputElement,loaderElement } from "./dom.js";
+import { ButtonInputElement,loaderElement } from "./dom.js";
 import { renderUsers } from "./render.js";
 
 export const fetchPromise = () => {
@@ -20,8 +20,8 @@ export const fetchPromise = () => {
                 };
             })
             users = newComments;
-            loaderElement.remove();
-            renderUsers();
+            loaderElement.remove(users);
+            renderUsers(users);
         });
 }
 
@@ -68,4 +68,4 @@ export const fetchPromiseNew = (CommentInputElement,NameInputElement) => fetch('
         }
         console.warn(error);
     })
-let users = []
+export let users = []

@@ -2,6 +2,7 @@ import { ListCommentsElement } from "./dom.js";
 import { Initlikes } from "./events.js";
 import { newReplay } from "./events.js";
 
+
 const addDate = (value) => {
   let nowDate = new Date(value);
   let time = {
@@ -16,7 +17,7 @@ const addDate = (value) => {
   return (nowDate.toLocaleDateString('ru', date) + ' ' + nowDate.toLocaleTimeString('ru', time));
 };
 
-export const renderUsers = () => {
+export const renderUsers = (users) => {
     const usersHTML = users.map((user, index) => {
         return `<li data-index='${index}'class="comment">
         <div class="comment-header">
@@ -37,10 +38,11 @@ export const renderUsers = () => {
       </li>`;
     })
         .join("");
+    
 
     ListCommentsElement.innerHTML = usersHTML;
-    Initlikes();
-    newReplay();
+    Initlikes(users);
+    newReplay(users);
 };
 export const replaceValue = (value) => {
     return value

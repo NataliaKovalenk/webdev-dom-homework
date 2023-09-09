@@ -1,7 +1,9 @@
 
 import { renderUsers } from "./render.js";
 import { fetchPromiseNew } from "./api.js";
-import { NameInputElement,CommentInputElement } from "./dom.js";
+import { NameInputElement,CommentInputElement,ButtonInputElement,commentDate,loaderElement} from "./dom.js";
+import { users } from "./api.js";
+import { replaceValue } from "./render.js";
 
 
 let isReply = false;
@@ -12,7 +14,7 @@ export const Initlikes = (users) => {
         like.addEventListener('click', (event) => {
             event.stopPropagation();
             const user = users[like.dataset.index]
-            let a = user.countLikes
+            console.log(user);
             if (user.isLiked === false) {
                 user.isLiked = true;
                 user.countLikes++;
@@ -22,7 +24,7 @@ export const Initlikes = (users) => {
                 user.isLiked = false
                 user.countLikes--;
             }
-            renderUsers();
+            renderUsers(users);
         });
     }
 };
@@ -50,7 +52,7 @@ export const initClick = () => {
         ButtonInputElement.disabled = true;
         ButtonInputElement.textContent = 'Добавляю комментарий';
         loaderElement.textContent = '';
-        fetchPromiseNew();
+        fetchPromiseNew(CommentInputElement, NameInputElement);
 
     })
 };
@@ -66,7 +68,7 @@ export const newReplay = () => {
                 .replaceAll('</div>', '')}`;
             CommentInputElement.value = originalText;
             isReply = true;
-            renderUsers();
+            renderUsers(users);
         })
     };
 }
